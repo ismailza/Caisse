@@ -4,8 +4,6 @@ import ma.fstm.ilisi.caisse.controlleur.Caisse;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class AuthForm extends JFrame {
     public AuthForm(Caisse caisse) {
@@ -32,11 +30,6 @@ public class AuthForm extends JFrame {
         add(passwordField, gbc);
         add(loginButton, gbc);
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                caisse.checkAuth(usernameField.getText(), new String(passwordField.getPassword()));
-            }
-        });
+        loginButton.addActionListener(e -> caisse.checkAuth(usernameField.getText(), new String(passwordField.getPassword())));
     }
 }
