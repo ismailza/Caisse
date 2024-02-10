@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class AuthForm extends JFrame {
-    public AuthForm() {
+    public AuthForm(Caisse caisse) {
         super("Caisse | Authentification");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 300);
@@ -35,7 +35,7 @@ public class AuthForm extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new Caisse().checkAuth(usernameField.getText(), new String(passwordField.getPassword()));
+                caisse.checkAuth(usernameField.getText(), new String(passwordField.getPassword()));
             }
         });
     }
