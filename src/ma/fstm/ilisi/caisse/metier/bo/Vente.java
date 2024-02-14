@@ -17,14 +17,12 @@ public class Vente {
         this.termine = false;
     }
 
-    public Vente(int id, Timestamp datetime) {
-        super();
-        this.id = id;
-        this.datetime = datetime;
-    }
-
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Timestamp getDatetime() {
@@ -50,7 +48,7 @@ public class Vente {
                 return;
             }
         }
-        LigneVente ligneVente = new LigneVente(article, quantite);
+        LigneVente ligneVente = new LigneVente(this, article, quantite);
         this.ligneVentes.add(ligneVente);
         this.total += ligneVente.getSubTotal();
     }
@@ -68,5 +66,9 @@ public class Vente {
             achats.add(achat);
         }
         return achats.iterator();
+    }
+
+    public boolean payerSomme() {
+        return termine;
     }
 }

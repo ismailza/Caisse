@@ -1,7 +1,7 @@
 package ma.fstm.ilisi.caisse.controlleur;
 
 import ma.fstm.ilisi.caisse.metier.bo.Article;
-import ma.fstm.ilisi.caisse.metier.bo.Catalogue;
+import ma.fstm.ilisi.caisse.metier.bo.Magasin;
 import ma.fstm.ilisi.caisse.metier.bo.Vente;
 import ma.fstm.ilisi.caisse.metier.service.AuthService;
 import ma.fstm.ilisi.caisse.metier.service.IncorrectAuthException;
@@ -14,7 +14,7 @@ import javax.swing.*;
 public class Caisse {
     private double solde;
     private Vente venteEncours;
-    private Catalogue catalogue = new Catalogue();
+    private Magasin magasin;
     private AuthForm authForm;
     private Home home;
     private Display display;
@@ -35,6 +35,7 @@ public class Caisse {
     public void start(){
         authForm = new AuthForm(this);
         authForm.setVisible(true);
+        magasin = Magasin.getInstance();
     }
 
     public void checkAuth(String username, String password) {
@@ -61,9 +62,11 @@ public class Caisse {
     }
 
     public void enregistrerArticle(String reference, int quantite) {
-        if (venteEncours == null)
+        if (venteEncours == null) {
             venteEncours = new Vente();
-        Article article = catalogue.chercherArticle(reference);
+            home.setDateVente(venteEncours.getDatetime());
+        }
+        Article article = magasin.chercherArticle(reference);
         venteEncours.ajouter(article, quantite);
         display.setDesignation(article.getDesignation());
         display.setPrice(article.getPrix());
@@ -71,7 +74,31 @@ public class Caisse {
         home.updateArticleList(venteEncours.getAchats());
     }
 
-    public void finVente() {
+    public boolean finVente(float montant) {
+        if (montant < venteEncours.getTotal())
+            return false;
         venteEncours.finirVente();
+        display.finVente(venteEncours.getTotal(), montant, montant - venteEncours.getTotal());
+        if (JOptionPane.showConfirmDialog(home, "Payer la vente", "Paiement", JOptionPane.YES_NO_CANCEL_OPTION) == JOptionPane.YES_OPTION)
+            payerVente();
+        return true;
+    }
+
+    public void payerVente() {
+        if (venteEncours.payerSomme()) {
+            solde += venteEncours.getTotal();
+            magasin.historiser(venteEncours);
+            venteEncours = null;
+        }
+    }
+
+    public void annulerVente() {
+        if (JOptionPane.showConfirmDialog(home, "Vous voulez vraiment annuler cette vente !?", "Annuler Vente", JOptionPane.YES_NO_CANCEL_OPTION) != JOptionPane.YES_OPTION)
+            return;
+        this.venteEncours = null;
+        display.setDesignation("");
+        display.setPrice(0);
+        display.setTotal(0);
+        home.updateArticleList(null);
     }
 }

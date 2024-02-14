@@ -16,9 +16,9 @@ public class Display extends JFrame {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         JPanel panel = new JPanel(new GridLayout(1, 3));
-        designation = new JLabel("Designation", SwingConstants.CENTER);
-        price = new JLabel("Price", SwingConstants.CENTER);
-        total = new JLabel("Total", SwingConstants.CENTER);
+        designation = new JLabel("", SwingConstants.CENTER);
+        price = new JLabel("Prix Unitaire: 00 DH", SwingConstants.CENTER);
+        total = new JLabel("Prix Total: 00 DH", SwingConstants.CENTER);
 
         panel.add(designation);
 
@@ -43,4 +43,9 @@ public class Display extends JFrame {
         this.total.setText(String.format("Prix Total: %.2f DH", total));
     }
 
+    public void finVente(float total, float montant, float reste) {
+        this.designation.setText(String.format("Total: %.2f", total));
+        this.price.setText(String.format("Montant: %.2f", montant));
+        this.total.setText(String.format("Reste: %.2f", reste));
+    }
 }
