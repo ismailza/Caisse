@@ -1,5 +1,7 @@
-package ma.fstm.ilisi.caisse.metier.bo;
+package ma.fstm.ilisi.caisse.controlleur;
 
+import ma.fstm.ilisi.caisse.metier.bo.Article;
+import ma.fstm.ilisi.caisse.metier.bo.Vente;
 import ma.fstm.ilisi.caisse.metier.dao.DAOArticle;
 import ma.fstm.ilisi.caisse.metier.dao.DAOVente;
 

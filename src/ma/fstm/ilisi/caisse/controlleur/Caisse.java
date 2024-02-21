@@ -1,8 +1,9 @@
 package ma.fstm.ilisi.caisse.controlleur;
 
 import ma.fstm.ilisi.caisse.metier.bo.Article;
-import ma.fstm.ilisi.caisse.metier.bo.Magasin;
+import ma.fstm.ilisi.caisse.metier.bo.LigneVente;
 import ma.fstm.ilisi.caisse.metier.bo.Vente;
+import ma.fstm.ilisi.caisse.metier.service.ArticleNotFoundException;
 import ma.fstm.ilisi.caisse.metier.service.AuthService;
 import ma.fstm.ilisi.caisse.metier.service.IncorrectAuthException;
 import ma.fstm.ilisi.caisse.presentation.AuthForm;
@@ -67,11 +68,17 @@ public class Caisse {
             home.setDateVente(venteEncours.getDatetime());
         }
         Article article = magasin.chercherArticle(reference);
-        venteEncours.ajouter(article, quantite);
-        display.setDesignation(article.getDesignation());
-        display.setPrice(article.getPrix());
-        display.setTotal(venteEncours.getTotal());
-        home.updateArticleList(venteEncours.getAchats());
+        try {
+            if (article == null)
+                throw new ArticleNotFoundException();
+            venteEncours.ajouter(article, quantite);
+            display.setDesignation(article.getDesignation());
+            display.setPrice(article.getPrix());
+            display.setTotal(venteEncours.getTotal());
+            home.updateArticleList(venteEncours.getLigneVentes());
+        } catch (ArticleNotFoundException e) {
+            JOptionPane.showMessageDialog(home, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     public boolean finVente(float montant) {
@@ -93,6 +100,8 @@ public class Caisse {
     }
 
     public void annulerVente() {
+        if (venteEncours == null)
+            return;
         if (JOptionPane.showConfirmDialog(home, "Vous voulez vraiment annuler cette vente !?", "Annuler Vente", JOptionPane.YES_NO_CANCEL_OPTION) != JOptionPane.YES_OPTION)
             return;
         this.venteEncours = null;
@@ -100,5 +109,35 @@ public class Caisse {
         display.setPrice(0);
         display.setTotal(0);
         home.updateArticleList(null);
+    }
+
+    public void annulerProduit(String reference) {
+        if (venteEncours == null)
+            return;
+        LigneVente ligneVente = venteEncours.chercherArticle(reference);
+        if (ligneVente == null)
+            JOptionPane.showMessageDialog(home, "Produit non trouvé dans la vente en cours!", "Annuler produit", JOptionPane.WARNING_MESSAGE);
+        else {
+            venteEncours.annulerArticle(ligneVente);
+            home.updateArticleList(venteEncours.getLigneVentes());
+            display.setTotal(venteEncours.getTotal());
+            display.setDesignation("");
+            display.setPrice(0f);
+        }
+    }
+
+    public void modifyQuantity(String reference, int quantity) {
+        if (venteEncours == null)
+            return;
+        LigneVente ligneVente = venteEncours.chercherArticle(reference);
+        if (ligneVente == null)
+            JOptionPane.showMessageDialog(home, "Produit non trouvé dans la vente en cours!", "Annuler produit", JOptionPane.WARNING_MESSAGE);
+        else {
+            venteEncours.denombrerQuantite(ligneVente, quantity);
+            home.updateArticleList(venteEncours.getLigneVentes());
+            display.setTotal(venteEncours.getTotal());
+            display.setDesignation(ligneVente.getDesignation());
+            display.setPrice(ligneVente.getPrix_unitaire());
+        }
     }
 }

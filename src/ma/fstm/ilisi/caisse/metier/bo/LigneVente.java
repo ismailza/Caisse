@@ -15,12 +15,12 @@ public class LigneVente {
         this.subTotal = quantite * prix_unitaire;
     }
 
-    public Article getArticle() {
-        return article;
-    }
-
     public String getReference() {
         return article.getReference();
+    }
+
+    public String getDesignation() {
+        return article.getDesignation();
     }
 
     public int getQuantite() {

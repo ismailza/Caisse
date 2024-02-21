@@ -59,16 +59,20 @@ public class Vente {
         this.total += ligneVente.getSubTotal();
     }
 
-    public Iterator<Map.Entry<String, Integer>> getAchats() {
-        List<Map.Entry<String, Integer>> achats = new ArrayList<>();
-        for (LigneVente lv : ligneVentes) {
-            Map.Entry<String, Integer> achat = new AbstractMap.SimpleEntry<>(lv.getReference(), lv.getQuantite());
-            achats.add(achat);
-        }
-        return achats.iterator();
-    }
-
     public boolean payerSomme() {
         return termine;
+    }
+
+    public LigneVente chercherArticle(String reference) {
+        for (LigneVente ldv : ligneVentes) {
+            if (ldv.getReference().equals(reference))
+                return ldv;
+        }
+        return null;
+    }
+
+    public void annulerArticle(LigneVente ligneVente) {
+        total -= ligneVente.getSubTotal();
+        ligneVentes.remove(ligneVente);
     }
 }
